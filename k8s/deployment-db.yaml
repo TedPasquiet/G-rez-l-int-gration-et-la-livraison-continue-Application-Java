@@ -25,4 +25,4 @@ spec:
         - name: POSTGRES_DB
           value: workshop-organizer-database
         ports:
-        - containerPort: 5432
+        - containerPort: 5439

@@ -20,7 +20,7 @@ spec:
         env:
         - name: SPRING_DATASOURCE_URL
           # TODO: check the datasource URL
-          value: jdbc:postgresql://workshop-organizer-db:5432/workshop-organizer-database
+          value: jdbc:postgresql://workshop-organizer-db:5439/workshop-organizer-database
         - name: SPRING_DATASOURCE_USERNAME
           valueFrom:
             secretKeyRef:
