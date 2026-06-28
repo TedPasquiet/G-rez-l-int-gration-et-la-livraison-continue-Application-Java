@@ -8,7 +8,9 @@ plugins {
 }
 
 group = 'fr.oc.devops'
-version = '0.2.4'
+// Version is injected by semantic-release in CI (-PreleaseVersion=x.y.z);
+// falls back to a default for local builds.
+version = findProperty('releaseVersion') ?: '0.2.4'
 
 repositories {
 	mavenCentral()
