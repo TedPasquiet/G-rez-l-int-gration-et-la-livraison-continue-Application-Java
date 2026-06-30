@@ -53,6 +53,8 @@ release:
         @semantic-release/git
   script:
     - npx semantic-release
+  variables:
+    GL_TOKEN: $GL_TOKEN
 
 # ---------------------------------------------------------------------------
 # Build the Spring Boot WAR for the tag semantic-release just created, and
