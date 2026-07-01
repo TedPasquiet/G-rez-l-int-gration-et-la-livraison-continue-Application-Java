@@ -1,63 +1,39 @@
-stages:
-  - test
-  - release
-  - build
-  - docker
+# =============================================================================
+# Back-end (Java / Spring Boot) pipeline.
+# The generic test/release skeleton lives in the shared ci-templates project;
+# here we only override images and add the Java-specific build/docker stages.
+# =============================================================================
+include:
+  - project: 'pasquietted/ci-templates'   # adjust to your GitLab path
+    ref: main
+    file: '/ci-template.yml'
 
 # ---------------------------------------------------------------------------
-# Run the Java tests and expose JUnit reports in the GitLab UI
+# Tests: JDK 21 image, test.sh drives Gradle.
 # ---------------------------------------------------------------------------
 test:
-  stage: test
+  extends: .test
   image: eclipse-temurin:21
-  script:
-    - chmod +x ./gradlew test.sh
-    - ./test.sh
-  artifacts:
-    when: always
-    reports:
-      junit: test-results/*.xml
-    paths:
-      - test-results/
-    expire_in: 1 week
 
 # ---------------------------------------------------------------------------
-# Automatically version, tag, build, publish and create a GitLab release.
-# Only runs on the main branch, after tests pass.
-# Requires CI/CD variables:
-#   GITLAB_TOKEN      -> a project/group access token with api + write_repository
-#   GITLAB_PROJECT_ID -> used by the maven-publish block in build.gradle
-#   GITLAB_TOKEN_NAME -> header name expected by the Maven registry
+# Release: semantic-release runs ./gradlew ... publish, so the Node release
+# image also needs a JDK. node:20-bookworm (Debian 12) has no openjdk-21
+# package, so install Temurin 21 from Adoptium, then run the shared
+# semantic-release setup (referenced from the template).
 # ---------------------------------------------------------------------------
 release:
-  stage: release
-  image: node:20-bookworm
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
+  extends: .release
   before_script:
-    # semantic-release runs ./gradlew, so the JDK must be present in this image.
-    # node:20-bookworm (Debian 12) has no openjdk-21 package, so pull Temurin 21
-    # from the Adoptium APT repo to match the JDK used in the other jobs.
     - apt-get update && apt-get install -y wget apt-transport-https gnupg
     - mkdir -p /etc/apt/keyrings
     - wget -qO - https://packages.adoptium.net/artifactory/api/gpg/key/public | gpg --dearmor -o /etc/apt/keyrings/adoptium.gpg
     - echo "deb [signed-by=/etc/apt/keyrings/adoptium.gpg] https://packages.adoptium.net/artifactory/deb bookworm main" > /etc/apt/sources.list.d/adoptium.list
     - apt-get update && apt-get install -y temurin-21-jdk
-    - npm install -g
-        semantic-release
-        @semantic-release/commit-analyzer
-        @semantic-release/release-notes-generator
-        @semantic-release/changelog
-        @semantic-release/exec
-        @semantic-release/gitlab
-        @semantic-release/git
-  script:
-    - npx semantic-release
+    - !reference [.release, before_script]
 
 # ---------------------------------------------------------------------------
 # Build the Spring Boot WAR for the tag semantic-release just created, and
-# explode it into build/dependency so the existing Dockerfile can consume it.
-# Tag pipelines only (CI_COMMIT_TAG = "v1.2.3").
+# explode it into build/dependency so the Dockerfile can consume it.
 # ---------------------------------------------------------------------------
 build:war:
   stage: build
@@ -78,7 +54,6 @@ build:war:
 # ---------------------------------------------------------------------------
 # Build the container image from the exploded WAR and push it to the GitLab
 # Container Registry, tagged with the release version and "latest".
-# Uses the built-in CI_REGISTRY* variables — no extra config needed.
 # ---------------------------------------------------------------------------
 docker:push:
   stage: docker
