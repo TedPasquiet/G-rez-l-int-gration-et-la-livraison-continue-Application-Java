@@ -85,10 +85,12 @@ publishing {
     }
     repositories {
 		maven {
-			url "https://gitlab.com/api/v4/projects/$System.env.GITLAB_PROJECT_ID/packages/maven"
+			// GITLAB_PROJECT_ID falls back to the id GitLab CI injects automatically.
+				def projectId = System.getenv("GITLAB_PROJECT_ID") ?: System.getenv("CI_PROJECT_ID")
+				url "https://gitlab.com/api/v4/projects/$projectId/packages/maven"
 			name "GitLab"
 			credentials(HttpHeaderCredentials) {
-				name = System.getenv("GITLAB_TOKEN_NAME")
+				name = System.getenv("GITLAB_TOKEN_NAME") ?: "Private-Token"
 				value = System.getenv("GITLAB_TOKEN")
 			}
 			authentication {
