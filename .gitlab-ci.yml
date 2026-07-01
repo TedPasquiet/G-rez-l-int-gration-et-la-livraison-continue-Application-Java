@@ -4,7 +4,7 @@
 # here we only override images and add the Java-specific build/docker stages.
 # =============================================================================
 include:
-  - project: 'pasquietted/G-rez-l-int-gration-et-la-livraison-continue-Application-Java'   # adjust to your GitLab path
+  - project: 'pasquietted/ci-templates'   # dépôt qui contient ci-template.yml
     ref: main
     file: '/ci-template.yml'
 
