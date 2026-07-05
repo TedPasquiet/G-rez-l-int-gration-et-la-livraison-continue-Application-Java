@@ -1,0 +1,21 @@
+app:
+  replicaCount: 1
+  image:
+    repository: workshop-organizer
+    tag: "local"
+    pullPolicy: Never
+  service:
+    type: LoadBalancer
+    port: 8080
+
+db:
+  image:
+    repository: postgres
+    tag: "13"
+  name: workshopsdb
+  service:
+    port: 5432
+
+secret:
+  username: workshops_user
+  password: oc2024

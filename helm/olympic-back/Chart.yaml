@@ -1,0 +1,6 @@
+apiVersion: v2
+name: olympic-back
+description: Helm chart for the Olympic Games Java Spring Boot back-end
+type: application
+version: 0.1.0
+appVersion: "local"
