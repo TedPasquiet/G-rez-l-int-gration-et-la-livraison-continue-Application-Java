@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: workshop-organizer-db-deployment
+spec:
+  replicas: {{ .Values.db.replicaCount }}
+  selector:
+    matchLabels:
+      app: workshop-organizer-db
+  template:
+    metadata:
+      labels:
+        app: workshop-organizer-db
+    spec:
+      containers:
+      - name: workshop-organizer-db
+        image: "{{ .Values.db.image.repository }}:{{ .Values.db.image.tag }}"
+        env:
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: workshop-organizer-db-secret
+              key: username
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: workshop-organizer-db-secret
+              key: password
+        - name: POSTGRES_DB
+          value: workshopsdb
+        ports:
+        - containerPort: {{ .Values.db.service.port }}

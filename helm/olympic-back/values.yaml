@@ -9,6 +9,7 @@ app:
     port: 8080
 
 db:
+  replicaCount: 1
   image:
     repository: postgres
     tag: "13"
