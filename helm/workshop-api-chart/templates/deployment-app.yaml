@@ -18,6 +18,10 @@ spec:
         imagePullPolicy: {{ .Values.app.image.pullPolicy }}
         ports:
         - containerPort: {{ .Values.app.service.port }}
+        {{- with .Values.app.resources }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
         env:
         - name: SPRING_DATASOURCE_URL
           value: jdbc:postgresql://workshop-organizer-db-service:{{ .Values.db.service.port }}/{{ .Values.db.name }}

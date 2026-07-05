@@ -30,3 +30,7 @@ spec:
           value: {{ .Values.db.name }}
         ports:
         - containerPort: {{ .Values.db.service.port }}
+        {{- with .Values.db.resources }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
