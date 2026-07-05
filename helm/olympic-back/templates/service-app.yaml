@@ -9,4 +9,4 @@ spec:
     - protocol: TCP
       port: {{ .Values.app.service.port }}
       targetPort: {{ .Values.app.service.port }}
-  type:  {{ .Values.app.db.service.type}}
+  type:  {{ .Values.app.service.type}}

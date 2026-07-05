@@ -27,6 +27,6 @@ spec:
               name: workshop-organizer-db-secret
               key: password
         - name: POSTGRES_DB
-          value: workshopsdb
+          value: {{ .Values.db.name }}
         ports:
         - containerPort: {{ .Values.db.service.port }}
