@@ -1,5 +1,5 @@
 apiVersion: v2
-name: olympic-back
+name: workshop-api-chart
 description: Helm chart for the Olympic Games Java Spring Boot back-end
 type: application
 version: 0.1.0
